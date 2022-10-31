@@ -1,3 +1,18 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Module3HM7;
+using NLog.Fluent;
 
-Console.WriteLine("Hello, World!");
+class Program
+{
+    static TaskCompletionSource<bool> taskcompletionsourse = new TaskCompletionSource<bool>();
+    static void Main(string[] args)
+    {
+        FileService file = new FileService();
+        file.Writer();
+        file.DoBackup += async () => file.Backup();
+        file.WriteFile();
+        taskcompletionsourse.SetResult(true);
+        taskcompletionsourse.Task.GetAwaiter().GetResult();
+
+    }
+}
+    
