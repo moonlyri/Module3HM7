@@ -1,18 +1,20 @@
-﻿using Module3HM7;
-using NLog.Fluent;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Module3HM7;
 
-class Program
+public class Program
 {
-    static TaskCompletionSource<bool> taskcompletionsourse = new TaskCompletionSource<bool>();
-    static void Main(string[] args)
+    public static async Task Main()
     {
-        FileService file = new FileService();
-        file.Writer();
-        file.DoBackup += async () => file.Backup();
-        file.WriteFile();
-        taskcompletionsourse.SetResult(true);
-        taskcompletionsourse.Task.GetAwaiter().GetResult();
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton<Logger>()
+            .AddTransient<FileService>()
+            .AddTransient<BackUp>()
+            .AddTransient<ConfigService>()
+            .AddTransient<Starter>()
+            .BuildServiceProvider();
 
+        var start = serviceProvider.GetService<Starter>();
+        await start.Run();
     }
 }
-    
